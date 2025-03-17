@@ -36,6 +36,13 @@ pip install opencv-python numpy
 - **🎨 Gray/Blue/Green Button**: Changes Filters  
 - **Live Video Feed**: Displays the current camera feed with applied effects  
 
+## 📂 Output File
+
+The recorded video will be saved as `output.mp4` in the project directory.  
+You can play this file using any media player that supports MP4 format.
+[📽 Download Recorded Video](output.mp4)
+
+
 ## 🔧 Troubleshooting
 
 ### ❓ 1. The output video doesn't play in QuickTime Player (Mac)?

@@ -24,7 +24,9 @@ def mouse_event_handler(event,x,y,flags,param):
         if record_dist < button_size:
             recording = not recording
             if recording:
-                video_writer = cv.VideoWriter('output.mp4', cv.VideoWriter_fourcc(*'mp4v'), 20.0, (640, 480))
+                frame_width = int(camera.get(cv.CAP_PROP_FRAME_WIDTH))
+                frame_height = int(camera.get(cv.CAP_PROP_FRAME_HEIGHT))
+                video_writer = cv.VideoWriter('output.mp4', cv.VideoWriter_fourcc(*'mp4v'), 20.0, (frame_width, frame_height))
             else:
                 video_writer.release()
 
@@ -38,24 +40,32 @@ while True:
     ret, frame = camera.read()
     assert ret, 'Cannot capture frame'
 
+    # 🔹 버튼이 없는 깨끗한 프레임을 복사 (녹화 용도)
+    clean_frame = frame.copy()
+
+    # 🎨 필터 적용 (원본 프레임에서 적용)
     if filter_mode == 1:
+        clean_frame = cv.bitwise_not(clean_frame)
         frame = cv.bitwise_not(frame)
     elif filter_mode == 2:
+        clean_frame = cv.flip(clean_frame, 1)
         frame = cv.flip(frame, 1)
 
+    # 🔹 버튼이 없는 clean_frame을 녹화
+    if recording and video_writer:
+        video_writer.write(clean_frame)
+
+    # 🔴 UI 요소 (버튼) 추가 → 화면에는 보이지만 녹화에는 포함되지 않음
     record_color = (0, 0, 200) if recording else (0, 0, 255)
     filter_color = (0, 255, 0) if filter_mode == 1 else (255, 0, 0) if filter_mode == 2 else (200, 200, 200)
 
     cv.circle(frame, recording_button, button_size, record_color, -1)
     cv.circle(frame, filter_button, button_size, filter_color, -1)
 
-    cv.putText(frame, "REC" if recording else "STOP", (60, 85), cv.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 3)
+    cv.putText(frame, "STOP" if recording else "REC", (60, 85), cv.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 3)
     cv.putText(frame, "FILTER", (175, 85), cv.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 3)
 
     cv.imshow('Video Recorder', frame)
-
-    if recording and video_writer:
-        video_writer.write(frame)
 
     key = cv.waitKey(1) & 0xFF
     if key == 27:
