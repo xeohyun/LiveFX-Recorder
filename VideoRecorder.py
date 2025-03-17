@@ -40,10 +40,8 @@ while True:
     ret, frame = camera.read()
     assert ret, 'Cannot capture frame'
 
-    # 🔹 버튼이 없는 깨끗한 프레임을 복사 (녹화 용도)
     clean_frame = frame.copy()
 
-    # 🎨 필터 적용 (원본 프레임에서 적용)
     if filter_mode == 1:
         clean_frame = cv.bitwise_not(clean_frame)
         frame = cv.bitwise_not(frame)
@@ -51,11 +49,9 @@ while True:
         clean_frame = cv.flip(clean_frame, 1)
         frame = cv.flip(frame, 1)
 
-    # 🔹 버튼이 없는 clean_frame을 녹화
     if recording and video_writer:
         video_writer.write(clean_frame)
 
-    # 🔴 UI 요소 (버튼) 추가 → 화면에는 보이지만 녹화에는 포함되지 않음
     record_color = (0, 0, 200) if recording else (0, 0, 255)
     filter_color = (0, 255, 0) if filter_mode == 1 else (255, 0, 0) if filter_mode == 2 else (200, 200, 200)
 
